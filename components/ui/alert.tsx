@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva } from "class-variance-authority"
-import type { VariantProps } from "class-variance-authority"
+import { type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
@@ -21,9 +21,12 @@ const alertVariants = cva(
   }
 )
 
+type AlertVariantProps = VariantProps<typeof alertVariants>
+type AlertVariant = AlertVariantProps["variant"]
+
 interface AlertProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onTouchCancel' | 'onTouchCancelCapture' | 'onTouchEnd' | 'onTouchEndCapture' | 'onTouchMove' | 'onTouchMoveCapture' | 'onTouchStart' | 'onTouchStartCapture'> {
-  variant?: Extract<VariantProps<typeof alertVariants>["variant"], string>
+  variant?: AlertVariant
 }
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
