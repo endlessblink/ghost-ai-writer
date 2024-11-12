@@ -2,45 +2,59 @@ import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 
 export async function generatePDF(element: HTMLElement): Promise<void> {
-  // Calculate dimensions
-  const pageWidth = 595.28 // A4 width in points
-  const pageHeight = 841.89 // A4 height in points
-  const margin = 40 // margins in points
-  
-  const canvas = await html2canvas(element, {
-    scale: 3, // Higher resolution
-    useCORS: true,
-    logging: false,
-    backgroundColor: '#ffffff',
-    windowWidth: element.scrollWidth,
-    windowHeight: element.scrollHeight,
-    allowTaint: true,
-    imageTimeout: 15000,
-    removeContainer: true,
-    letterRendering: true,
-  })
+  // A4 size in points (72 points per inch)
+  const pageWidth = 595.28
+  const pageHeight = 841.89
+  const margin = 30
 
-  // Create PDF with A4 dimensions
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'pt',
-    format: 'a4'
-  })
+  // Clone the element to avoid modifying the original
+  const clone = element.cloneNode(true) as HTMLElement
+  clone.style.width = `${pageWidth - 2 * margin}px`
+  document.body.appendChild(clone)
 
-  // Calculate scaling to fit content within margins
-  const availableWidth = pageWidth - 2 * margin
-  const availableHeight = pageHeight - 2 * margin
-  const imgWidth = canvas.width
-  const imgHeight = canvas.height
-  const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight)
+  try {
+    const canvas = await html2canvas(clone, {
+      scale: 2, // Balance between quality and performance
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      allowTaint: true,
+      imageTimeout: 30000,
+      letterRendering: true,
+      foreignObjectRendering: true, // Better text rendering
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: pageWidth,
+      windowHeight: pageHeight,
+      onclone: (doc) => {
+        // Ensure proper font rendering
+        const style = doc.createElement('style')
+        style.innerHTML = `
+          * { -webkit-font-smoothing: antialiased; }
+          body { margin: 0; padding: 0; }
+        `
+        doc.head.appendChild(style)
+      }
+    })
 
-  // Calculate centered position
-  const x = (pageWidth - imgWidth * ratio) / 2
-  const y = (pageHeight - imgHeight * ratio) / 2
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+      compress: true
+    })
 
-  // Add image with high quality settings
-  const imgData = canvas.toDataURL('image/jpeg', 1.0)
-  pdf.addImage(imgData, 'JPEG', x, y, imgWidth * ratio, imgHeight * ratio, '', 'FAST')
+    // Calculate dimensions to maintain aspect ratio
+    const imgWidth = pageWidth - 2 * margin
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-  pdf.save('resume.pdf')
+    // Add image with improved quality
+    const imgData = canvas.toDataURL('image/png', 1.0)
+    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight, undefined, 'FAST')
+
+    pdf.save('resume.pdf')
+  } finally {
+    // Clean up
+    document.body.removeChild(clone)
+  }
 }

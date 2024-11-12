@@ -42,7 +42,14 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
           </div>
         </div>
         <TabsContent value="preview" className="mt-4">
-          <div ref={previewRef} className="prose dark:prose-invert max-w-[21cm] mx-auto bg-white p-8 rounded-lg shadow-sm print:shadow-none" style={{ minHeight: '29.7cm' }}>
+          <div ref={previewRef} className="prose dark:prose-invert max-w-[21cm] mx-auto bg-white p-8 rounded-lg shadow-sm print:shadow-none" style={{ 
+            minHeight: '29.7cm',
+            fontSize: '12pt',
+            lineHeight: '1.5',
+            letterSpacing: '0.025em',
+            fontFeatureSettings: '"kern" 1',
+            textRendering: 'optimizeLegibility'
+          }}>
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </TabsContent>
