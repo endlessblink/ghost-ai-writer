@@ -5,17 +5,18 @@ import { Loader2, FileText, Wand2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card } from "@/components/ui/card"
-import { FormData } from "@/lib/types"
+import { ResumeFormData } from "@/lib/types"
 import { sampleJobListing, sampleQualifications, sampleCV } from "@/lib/sample-data"
 
 interface ResumeFormProps {
-  onSubmit: (data: FormData) => Promise<void>
+  onSubmit: (data: ResumeFormData) => Promise<void>
   isGenerating: boolean
   testMode?: boolean
+  error?: string
 }
 
-export function ResumeForm({ onSubmit, isGenerating, testMode }: ResumeFormProps) {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<FormData>()
+export function ResumeForm({ onSubmit, isGenerating, testMode, error }: ResumeFormProps) {
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<ResumeFormData>()
 
   const loadSampleData = () => {
     setValue("jobListing", sampleJobListing)
@@ -83,6 +84,11 @@ export function ResumeForm({ onSubmit, isGenerating, testMode }: ResumeFormProps
         </div>
         
         <div className="mt-6">
+          {error && (
+            <div className="mb-4">
+              <p className="text-red-500 text-sm">{error}</p>
+            </div>
+          )}
           <Button type="submit" disabled={isGenerating} className="w-full">
             {isGenerating ? (
               <>

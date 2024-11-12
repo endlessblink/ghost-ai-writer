@@ -6,7 +6,7 @@ import { headers } from "next/headers"
 
 export async function POST(request: Request) {
   try {
-    const data: ResumeFormData = await request.json()
+    const data = await request.json() as ResumeFormData
     const headersList = await headers()
     const apiKey = headersList.get('x-api-key')
     const apiType = headersList.get('x-api-type')
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json({ content: generatedContent })
     } catch (error) {
-      console.error('API error:', error)
+      console.error('API error:', error instanceof Error ? error.message : error)
       return NextResponse.json(
         { error: error instanceof Error ? error.message : "Failed to generate resume" },
         { status: 500 }
