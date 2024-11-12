@@ -20,19 +20,28 @@ export async function POST(request: Request) {
       )
     }
 
-    // Validate required fields
-    if (!data.jobListing || typeof data.jobListing !== 'string' || data.jobListing.trim().length < 10) {
-      return NextResponse.json(
-        { error: "Please provide a detailed job listing (minimum 10 characters)" },
-        { status: 400 }
-      )
+    // Validate and trim input fields
+    const trimmedJobListing = data.jobListing?.trim() || ''
+    const trimmedCV = data.existingCV?.trim() || ''
+    const trimmedQualifications = data.qualifications?.trim()
+
+    console.log('Validated input lengths:', {
+      jobListing: trimmedJobListing.length,
+      cv: trimmedCV.length,
+      qualifications: trimmedQualifications?.length
+    })
+
+    // Validate required fields with specific error messages
+    if (trimmedJobListing.length < 10) {
+      const error = "Job listing must be at least 10 characters long. Current length: " + trimmedJobListing.length
+      console.log('Validation failed:', error)
+      return NextResponse.json({ error }, { status: 400 })
     }
 
-    if (!data.existingCV || typeof data.existingCV !== 'string' || data.existingCV.trim().length < 10) {
-      return NextResponse.json(
-        { error: "Please provide your current CV/resume (minimum 10 characters)" },
-        { status: 400 }
-      )
+    if (trimmedCV.length < 10) {
+      const error = "CV must be at least 10 characters long. Current length: " + trimmedCV.length
+      console.log('Validation failed:', error)
+      return NextResponse.json({ error }, { status: 400 })
     }
 
     const headersList = headers()
@@ -56,9 +65,9 @@ export async function POST(request: Request) {
       })
       
       const generatedContent = await generateResumeContent(
-        data.jobListing.trim(),
-        data.qualifications?.trim(),
-        data.existingCV.trim(),
+        trimmedJobListing,
+        trimmedQualifications,
+        trimmedCV,
         apiKey
       )
       

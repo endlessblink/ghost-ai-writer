@@ -55,7 +55,9 @@ export function ResumeForm({ onSubmit, isGenerating, testMode, error }: ResumeFo
               })}
             />
             {errors.jobListing && (
-              <p className="text-red-500 text-sm mt-1">Job listing is required</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.jobListing.message || "Job listing must be at least 10 characters"}
+              </p>
             )}
           </div>
           
@@ -84,7 +86,9 @@ export function ResumeForm({ onSubmit, isGenerating, testMode, error }: ResumeFo
               })}
             />
             {errors.existingCV && (
-              <p className="text-red-500 text-sm mt-1">Existing CV is required</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.existingCV.message || "CV must be at least 10 characters"}
+              </p>
             )}
           </div>
         </div>
