@@ -7,8 +7,8 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "dev": "NODE_NO_WARNINGS=1 next dev",
-    "build": "next build",
+    "dev": "next dev",
+    "build": "next build", 
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
