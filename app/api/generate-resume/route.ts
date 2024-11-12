@@ -47,13 +47,22 @@ export async function POST(request: Request) {
 
     const headersList = headers()
     const apiKey = headersList.get('x-api-key')
+    const apiType = headersList.get('x-api-type') as 'openai' | 'anthropic'
     
     console.log('API Key present:', !!apiKey)
+    console.log('API Type:', apiType)
 
     if (!apiKey || typeof apiKey !== 'string') {
       return NextResponse.json(
         { error: "No API key provided. Please add an API key in settings." },
         { status: 401 }
+      )
+    }
+
+    if (!apiType || (apiType !== 'openai' && apiType !== 'anthropic')) {
+      return NextResponse.json(
+        { error: "Invalid API type. Must be 'openai' or 'anthropic'." },
+        { status: 400 }
       )
     }
 
@@ -69,7 +78,8 @@ export async function POST(request: Request) {
         trimmedJobListing,
         trimmedQualifications,
         trimmedCV,
-        apiKey
+        apiKey,
+        apiType
       )
       
       console.log('Resume generation successful, content length:', generatedContent.length)

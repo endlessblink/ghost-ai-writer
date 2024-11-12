@@ -1,10 +1,12 @@
 import { getOpenAIClient } from '@/lib/openai'
+import Anthropic from '@anthropic-ai/sdk'
 
 export async function generateResumeContent(
   jobListing: string, 
   qualifications: string | undefined, 
   existingCV: string,
-  apiKey: string
+  apiKey: string,
+  apiType: 'openai' | 'anthropic' = 'openai'
 ): Promise<string> {
   if (!jobListing?.trim()) {
     throw new Error('Job listing is required')
@@ -15,8 +17,6 @@ export async function generateResumeContent(
   }
 
   try {
-    const openai = getOpenAIClient(apiKey)
-    
     const systemPrompt = `You are an expert resume writer and ATS optimization specialist. 
 Your task is to create a tailored resume based on the provided job listing and existing CV.
 Format the output in clean, professional Markdown.
@@ -27,31 +27,64 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
       ? `Job Listing:\n${jobListing}\n\nApplicant Qualifications:\n${qualifications}\n\nExisting CV:\n${existingCV}`
       : `Job Listing:\n${jobListing}\n\nExisting CV:\n${existingCV}`
 
-    console.log('Sending request to OpenAI with prompt lengths:', {
-      systemPrompt: systemPrompt.length,
-      userPrompt: userPrompt.length
-    })
-    
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      temperature: 0.7,
-      max_tokens: 2048,
-      presence_penalty: 0.1,
-      frequency_penalty: 0.1,
-    })
+    let content: string | undefined
 
-    console.log('OpenAI response received:', {
-      status: completion.choices[0]?.finish_reason,
-      modelUsed: completion.model,
-      promptTokens: completion.usage?.prompt_tokens,
-      completionTokens: completion.usage?.completion_tokens
-    })
+    if (apiType === 'anthropic') {
+      const anthropic = new Anthropic({
+        apiKey: apiKey,
+      })
 
-    const content = completion.choices[0]?.message?.content
+      console.log('Sending request to Anthropic with prompt lengths:', {
+        systemPrompt: systemPrompt.length,
+        userPrompt: userPrompt.length
+      })
+
+      const completion = await anthropic.messages.create({
+        model: 'claude-3-opus-20240229',
+        max_tokens: 4096,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+      })
+
+      console.log('Anthropic response received:', {
+        status: completion.stop_reason,
+        modelUsed: completion.model,
+        usage: completion.usage
+      })
+
+      content = completion.content[0].text
+    } else {
+      const openai = getOpenAIClient(apiKey)
+      
+      console.log('Sending request to OpenAI with prompt lengths:', {
+        systemPrompt: systemPrompt.length,
+        userPrompt: userPrompt.length
+      })
+      
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1,
+      })
+
+      console.log('OpenAI response received:', {
+        status: completion.choices[0]?.finish_reason,
+        modelUsed: completion.model,
+        promptTokens: completion.usage?.prompt_tokens,
+        completionTokens: completion.usage?.completion_tokens
+      })
+
+      content = completion.choices[0]?.message?.content
+    }
     if (!content) {
       throw new Error('No content generated')
     }
