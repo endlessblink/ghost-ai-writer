@@ -1,6 +1,6 @@
 export interface ResumeFormData {
-  jobDescription: string
-  existingResume: string
+  jobListing: string
+  existingCV: string
   qualifications?: string
 }
 

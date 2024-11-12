@@ -49,7 +49,10 @@ export function ResumeForm({ onSubmit, isGenerating, testMode, error }: ResumeFo
             <Textarea
               placeholder="Paste the job listing here..."
               className="min-h-[150px]"
-              {...register("jobListing", { required: true })}
+              {...register("jobListing", { 
+                required: "Job listing is required",
+                minLength: { value: 10, message: "Job listing is too short" }
+              })}
             />
             {errors.jobListing && (
               <p className="text-red-500 text-sm mt-1">Job listing is required</p>
@@ -75,7 +78,10 @@ export function ResumeForm({ onSubmit, isGenerating, testMode, error }: ResumeFo
             <Textarea
               placeholder="Paste your current CV/resume here..."
               className="min-h-[150px]"
-              {...register("existingCV", { required: true })}
+              {...register("existingCV", { 
+                required: "Existing CV is required",
+                minLength: { value: 10, message: "CV content is too short" }
+              })}
             />
             {errors.existingCV && (
               <p className="text-red-500 text-sm mt-1">Existing CV is required</p>

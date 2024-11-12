@@ -23,8 +23,8 @@ export async function POST(request: Request) {
     try {
       if (apiType === 'openai') {
         generatedContent = await generateResumeWithOpenAI(
-          data.jobDescription,
-          data.existingResume,
+          data.jobListing,
+          data.existingCV,
           data.qualifications,
           apiKey
         )
