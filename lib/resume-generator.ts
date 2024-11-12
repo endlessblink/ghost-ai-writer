@@ -42,8 +42,8 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
       const completion = await anthropic.messages.create({
         model: 'claude-3-opus-20240229',
         max_tokens: 4096,
+        system: systemPrompt,
         messages: [
-          { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
