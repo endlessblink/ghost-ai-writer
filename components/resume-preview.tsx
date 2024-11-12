@@ -43,6 +43,7 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
         </div>
         <TabsContent value="preview" className="mt-4">
           <div ref={previewRef} className="prose dark:prose-invert max-w-[21cm] mx-auto bg-white p-8 rounded-lg shadow-sm print:shadow-none" style={{ 
+            width: '21cm',
             minHeight: '29.7cm',
             fontSize: '12pt',
             lineHeight: '1.6',
@@ -51,7 +52,7 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
             textRendering: 'optimizeLegibility',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+            fontFamily: 'Helvetica, Arial, sans-serif'
           }}>
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
