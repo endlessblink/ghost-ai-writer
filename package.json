@@ -8,14 +8,14 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build", 
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.18.0",
+    "@anthropic-ai/sdk": "0.18.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
@@ -23,6 +23,7 @@
     "@radix-ui/react-switch": "^1.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "encoding": "0.1.13",
     "html2canvas": "1.4.1",
     "jspdf": "2.5.2",
     "lucide-react": "^0.358.0",
