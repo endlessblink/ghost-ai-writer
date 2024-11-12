@@ -1,11 +1,13 @@
 "use client"
 
 import ReactMarkdown from "react-markdown"
-import { Save } from "lucide-react"
+import { Save, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { generatePDF } from "@/lib/pdf-utils"
+import { useRef } from "react"
 
 interface ResumePreviewProps {
   content: string
@@ -13,6 +15,13 @@ interface ResumePreviewProps {
 }
 
 export function ResumePreview({ content, onSave }: ResumePreviewProps) {
+  const previewRef = useRef<HTMLDivElement>(null)
+
+  const handleDownloadPDF = async () => {
+    if (previewRef.current) {
+      await generatePDF(previewRef.current)
+    }
+  }
   return (
     <Card className="p-6">
       <Tabs defaultValue="preview">
@@ -21,13 +30,19 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
             <TabsTrigger value="preview">Preview</TabsTrigger>
             <TabsTrigger value="markdown">Markdown</TabsTrigger>
           </TabsList>
-          <Button onClick={onSave} variant="outline">
-            <Save className="mr-2 h-4 w-4" />
-            Save Resume
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={onSave} variant="outline">
+              <Save className="mr-2 h-4 w-4" />
+              Save Resume
+            </Button>
+            <Button onClick={handleDownloadPDF} variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Download PDF
+            </Button>
+          </div>
         </div>
         <TabsContent value="preview" className="mt-4">
-          <div className="prose dark:prose-invert max-w-none">
+          <div ref={previewRef} className="prose dark:prose-invert max-w-none bg-white p-8 rounded-lg">
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </TabsContent>
