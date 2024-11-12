@@ -34,15 +34,25 @@ export async function POST(request: Request) {
     }
 
     try {
+      console.log('Starting resume generation with:', {
+        jobListingLength: data.jobListing.trim().length,
+        qualificationsPresent: !!data.qualifications,
+        cvLength: data.existingCV.trim().length,
+        apiKeyPresent: !!apiKey
+      })
+      
       const generatedContent = await generateResumeContent(
         data.jobListing.trim(),
         data.qualifications?.trim(),
         data.existingCV.trim(),
         apiKey
       )
+      
+      console.log('Resume generation successful, content length:', generatedContent.length)
       return NextResponse.json({ content: generatedContent })
     } catch (error) {
-      console.error('API error:', error instanceof Error ? error.message : error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error('API error:', errorMessage)
       return NextResponse.json(
         { error: error instanceof Error ? error.message : "Failed to generate resume" },
         { status: 500 }

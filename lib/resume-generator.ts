@@ -27,6 +27,11 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
       ? `Job Listing:\n${jobListing}\n\nApplicant Qualifications:\n${qualifications}\n\nExisting CV:\n${existingCV}`
       : `Job Listing:\n${jobListing}\n\nExisting CV:\n${existingCV}`
 
+    console.log('Sending request to OpenAI with prompt lengths:', {
+      systemPrompt: systemPrompt.length,
+      userPrompt: userPrompt.length
+    })
+    
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -39,11 +44,19 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
       frequency_penalty: 0.1,
     })
 
+    console.log('OpenAI response received:', {
+      status: completion.choices[0]?.finish_reason,
+      modelUsed: completion.model,
+      promptTokens: completion.usage?.prompt_tokens,
+      completionTokens: completion.usage?.completion_tokens
+    })
+
     const content = completion.choices[0]?.message?.content
     if (!content) {
       throw new Error('No content generated')
     }
 
+    console.log('Generated content length:', content.length)
     return content
   } catch (error) {
     console.error('Resume generation error:', error)
