@@ -3,72 +3,107 @@
 import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { FileText, Download } from "lucide-react"
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+import { Download, Eye } from "lucide-react"
+import { generatePDF, previewPDF } from "@/lib/pdf-utils"
 
 interface FormattedResumeProps {
   content: string
 }
 
 export function FormattedResume({ content }: FormattedResumeProps) {
-  const resumeRef = React.useRef<HTMLDivElement>(null)
+  const formattedContent = React.useMemo(() => {
+    const lines = content.split('\n')
+    let html = ''
+    let inList = false
 
-  const handleDownloadPDF = async () => {
-    if (!resumeRef.current) return
-
-    const canvas = await html2canvas(resumeRef.current)
-    const imgData = canvas.toDataURL('image/png')
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: [canvas.width, canvas.height]
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim()
+      
+      if (trimmedLine.startsWith('# ')) {
+        // Name
+        html += `<h1>${trimmedLine.slice(2)}</h1>`
+      } else if (trimmedLine.startsWith('## ')) {
+        // Section headers
+        if (inList) {
+          html += '</ul>'
+          inList = false
+        }
+        html += `<h2>${trimmedLine.slice(3)}</h2>`
+      } else if (trimmedLine.startsWith('#### ')) {
+        // Job headers
+        if (inList) {
+          html += '</ul>'
+          inList = false
+        }
+        const parts = trimmedLine.slice(5).split('|')
+        if (parts.length >= 2) {
+          html += `
+            <div class="job-header">${parts[0].trim()}</div>
+            <div class="job-subheader">${parts[1].trim()}${parts[2] ? ` | ${parts[2].trim()}` : ''}</div>
+          `
+        } else {
+          html += `<div class="job-header">${trimmedLine.slice(5)}</div>`
+        }
+      } else if (trimmedLine.startsWith('- ')) {
+        // List items
+        if (!inList) {
+          html += '<ul>'
+          inList = true
+        }
+        html += `<li>${trimmedLine.slice(2)}</li>`
+      } else if (trimmedLine.includes('•')) {
+        // Contact info
+        html += `<div class="contact-info">${trimmedLine}</div>`
+      } else if (trimmedLine !== '') {
+        // Regular paragraphs
+        if (inList) {
+          html += '</ul>'
+          inList = false
+        }
+        html += `<p>${trimmedLine}</p>`
+      }
     })
 
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
-    pdf.save('resume.pdf')
+    if (inList) html += '</ul>'
+    return html
+  }, [content])
+
+  const handleDownload = async () => {
+    try {
+      await generatePDF('resume-content', 'resume.pdf')
+    } catch (error) {
+      console.error('Failed to generate PDF:', error)
+    }
   }
 
-  // Parse the content into sections
-  const sections = content.split('\n\n').map(section => {
-    const [title, ...content] = section.split('\n')
-    return { title, content: content.join('\n') }
-  })
+  const handlePreview = async () => {
+    try {
+      await previewPDF('resume-content')
+    } catch (error) {
+      console.error('Failed to preview PDF:', error)
+    }
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Generated Resume
-          <div className="space-x-2">
-            <Button variant="outline" size="sm" onClick={() => {
-              navigator.clipboard.writeText(content)
-            }}>
-              <FileText className="mr-2 h-4 w-4" />
-              Copy
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
-              <Download className="mr-2 h-4 w-4" />
-              Download PDF
-            </Button>
-          </div>
-        </CardTitle>
+        <CardTitle>Your Formatted Resume</CardTitle>
       </CardHeader>
       <CardContent>
         <div 
-          ref={resumeRef}
-          className="p-8 bg-white rounded-lg shadow-sm"
-        >
-          {sections.map((section, index) => (
-            <div key={index} className="mb-6">
-              <h2 className="text-xl font-bold mb-3 text-gray-800 border-b pb-2">
-                {section.title}
-              </h2>
-              <div className="text-gray-600 whitespace-pre-wrap">
-                {section.content}
-              </div>
-            </div>
-          ))}
+          id="resume-content" 
+          className="prose dark:prose-invert max-w-none"
+          dangerouslySetInnerHTML={{ __html: formattedContent }}
+        />
+        <div className="flex space-x-4 mt-4">
+          <Button onClick={handleDownload}>
+            <Download className="mr-2 h-4 w-4" />
+            Download PDF
+          </Button>
+          <Button onClick={handlePreview}>
+            <Eye className="mr-2 h-4 w-4" />
+            Preview PDF
+          </Button>
         </div>
       </CardContent>
     </Card>

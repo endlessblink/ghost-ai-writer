@@ -17,15 +17,95 @@ export async function generateResumeContent(
   }
 
   try {
-    const systemPrompt = `You are an expert resume writer and ATS optimization specialist. 
-Your task is to create a tailored resume based on the provided job listing and existing CV.
-Format the output in clean, professional Markdown.
-Focus on matching keywords and skills from the job listing while maintaining authenticity.
-Ensure the resume is ATS-friendly and highlights relevant experience.`
+    const systemPrompt = `You are a professional resume writer specializing in ATS-optimized resumes.
+Create an ATS-optimized CV following these specific requirements:
 
-    const userPrompt = qualifications
-      ? `Job Listing:\n${jobListing}\n\nApplicant Qualifications:\n${qualifications}\n\nExisting CV:\n${existingCV}`
-      : `Job Listing:\n${jobListing}\n\nExisting CV:\n${existingCV}`
+1. Contact Header
+Format as: FIRST LAST
+City, State/Region, Country | Phone | Email
+- No bullet points in contact information
+- Single line format
+- No social media links unless specifically relevant
+- Optional: LinkedIn URL if professional
+
+2. Professional Summary (3-4 lines)
+- Start with years of experience and current title
+- Include 1-2 key achievements with metrics
+- Mention most relevant technical skills
+Example:
+Senior Motion Designer with 10+ years of experience in post-production and gaming. Led teams delivering 200+ projects with 
+98% client satisfaction rate. Expert in Adobe Creative Suite, managing $1M+ production budgets while reducing delivery 
+time by 40%.
+
+3. Technical Skills Section
+Group related skills by category with proficiency levels:
+TECHNICAL SKILLS
+• Motion Design: After Effects, Spine (Expert)
+• Video Editing: Premiere Pro, DaVinci Resolve (Advanced)
+• 3D & Graphics: Blender, Photoshop, Illustrator (Advanced)
+• Project Management: Asset Management, Team Leadership
+
+4. Professional Experience
+Format each entry as:
+Company Name
+Primary Job Title
+City, Country
+MM/YYYY - MM/YYYY
+
+• Achieved [specific result] by [specific action] resulting in [quantifiable impact]
+• Begin each bullet with action verbs (Developed, Implemented, Led, etc.)
+• 3-5 bullets per role
+• Space between each bullet point
+• Consistent punctuation throughout
+
+5. Formatting Requirements
+- Font: Arial
+- Size: 10-12 points
+- Margins: 1 inch all around
+- Alignment: Left-aligned text
+- Spacing: Single-spaced with extra space between sections
+- Section Headers: ALL CAPS, bold
+- No tables, columns, text boxes, graphics, logos, headers/footers, or special characters
+
+6. Content Guidelines
+- Keep to 2 pages maximum
+- Use reverse chronological order
+- Include location for each role
+- Spell out numbers under 10
+- Use % symbol for percentages
+- Use $ for monetary values
+- Use consistent date format (MM/YYYY)
+
+7. Keywords and ATS Optimization
+- Mirror exact phrases from job description
+- Use both full terms and acronyms: "Adobe After Effects (AE)"
+- Place keywords in context of achievements
+- Include relevant industry-standard certifications
+- Avoid keyword stuffing and complex formatting
+
+Format the output using markdown with these markers:
+# for name (centered)
+## for main sections (left-aligned, all caps)
+#### for job entries
+- for bullet points
+| for contact information separators
+
+Ensure all content is factual and based on the provided information.
+Focus on quantifiable achievements and metrics where possible.
+Maintain consistent formatting throughout the document.`
+
+    const userPrompt = `Please rewrite this resume to be ATS-friendly while maintaining all factual information:
+
+Job Description:
+${jobListing}
+
+Current Resume:
+${existingCV}
+
+Additional Qualifications:
+${qualifications || 'None provided'}
+
+Focus on highlighting relevant experience and skills that match the job requirements.`
 
     let content: string | undefined
 
@@ -55,9 +135,9 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
         usage: completion.usage
       })
 
-      content = completion.content[0].text
+      content = completion.content[0]?.text || undefined
     } else {
-      const openai = getOpenAIClient(apiKey)
+      const openai = getOpenAIClient()
       
       console.log('Sending request to OpenAI with prompt lengths:', {
         systemPrompt: systemPrompt.length,
@@ -83,7 +163,7 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
         completionTokens: completion.usage?.completion_tokens
       })
 
-      content = completion.choices[0]?.message?.content
+      content = completion.choices[0]?.message?.content || undefined
     }
     if (!content) {
       throw new Error('No content generated')
