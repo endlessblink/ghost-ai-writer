@@ -5,28 +5,42 @@ import { headers } from "next/headers"
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json() as ResumeFormData
-    
+    console.log('Received request headers:', Object.fromEntries(headers()))
+      
+    const rawData = await request.json()
+    console.log('Received request body:', rawData)
+      
+    const data = rawData as ResumeFormData
+      
+    // Validate request structure
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json(
+        { error: "Invalid request format - expected object" },
+        { status: 400 }
+      )
+    }
+
     // Validate required fields
-    if (!data.jobListing || data.jobListing.trim().length < 10) {
+    if (!data.jobListing || typeof data.jobListing !== 'string' || data.jobListing.trim().length < 10) {
       return NextResponse.json(
         { error: "Please provide a detailed job listing (minimum 10 characters)" },
         { status: 400 }
       )
     }
 
-    if (!data.existingCV || data.existingCV.trim().length < 10) {
+    if (!data.existingCV || typeof data.existingCV !== 'string' || data.existingCV.trim().length < 10) {
       return NextResponse.json(
         { error: "Please provide your current CV/resume (minimum 10 characters)" },
         { status: 400 }
       )
     }
 
-    const headersList = await headers()
+    const headersList = headers()
     const apiKey = headersList.get('x-api-key')
-    const apiType = headersList.get('x-api-type')
+    
+    console.log('API Key present:', !!apiKey)
 
-    if (!apiKey) {
+    if (!apiKey || typeof apiKey !== 'string') {
       return NextResponse.json(
         { error: "No API key provided. Please add an API key in settings." },
         { status: 401 }
