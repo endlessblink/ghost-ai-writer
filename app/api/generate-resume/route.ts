@@ -37,7 +37,8 @@ export async function POST(request: Request) {
       const generatedContent = await generateResumeContent(
         data.jobListing.trim(),
         data.qualifications?.trim(),
-        data.existingCV.trim()
+        data.existingCV.trim(),
+        apiKey
       )
       return NextResponse.json({ content: generatedContent })
     } catch (error) {

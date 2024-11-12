@@ -1,6 +1,11 @@
 import { getOpenAIClient } from '@/lib/openai'
 
-export async function generateResumeContent(jobListing: string, qualifications: string | undefined, existingCV: string): Promise<string> {
+export async function generateResumeContent(
+  jobListing: string, 
+  qualifications: string | undefined, 
+  existingCV: string,
+  apiKey: string
+): Promise<string> {
   if (!jobListing?.trim()) {
     throw new Error('Job listing is required')
   }
@@ -10,7 +15,7 @@ export async function generateResumeContent(jobListing: string, qualifications: 
   }
 
   try {
-    const openai = getOpenAIClient()
+    const openai = getOpenAIClient(apiKey)
     
     const systemPrompt = `You are an expert resume writer and ATS optimization specialist. 
 Your task is to create a tailored resume based on the provided job listing and existing CV.
