@@ -10,7 +10,12 @@ export async function POST(request: Request) {
     const rawData = await request.json()
     console.log('Received request body:', rawData)
       
-    const data = rawData as ResumeFormData
+    // Map incoming field names to expected names
+    const data = {
+      jobListing: rawData.jobDescription,
+      existingCV: rawData.existingResume,
+      qualifications: rawData.qualifications
+    } as ResumeFormData
       
     // Validate request structure
     if (!data || typeof data !== 'object') {
