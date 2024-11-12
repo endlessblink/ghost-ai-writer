@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { generateResumeWithOpenAI } from "@/lib/openai"
-import { generateResumeWithAnthropic } from "@/lib/anthropic"
+import { generateResumeContent } from "@/lib/resume-generator"
 import { ResumeFormData } from "@/lib/types"
 import { headers } from "next/headers"
 
@@ -34,27 +33,12 @@ export async function POST(request: Request) {
       )
     }
 
-    let generatedContent: string
-
     try {
-      if (apiType === 'openai') {
-        generatedContent = await generateResumeWithOpenAI(
-          data.jobListing.trim(),
-          data.existingCV.trim(),
-          data.qualifications?.trim(),
-          apiKey
-        )
-      } else if (apiType === 'anthropic') {
-        generatedContent = await generateResumeWithAnthropic(
-          data.jobListing.trim(),
-          data.existingCV.trim(),
-          data.qualifications?.trim(),
-          apiKey
-        )
-      } else {
-        throw new Error("Invalid API type. Please select either OpenAI or Anthropic.")
-      }
-
+      const generatedContent = await generateResumeContent(
+        data.jobListing.trim(),
+        data.qualifications?.trim(),
+        data.existingCV.trim()
+      )
       return NextResponse.json({ content: generatedContent })
     } catch (error) {
       console.error('API error:', error instanceof Error ? error.message : error)

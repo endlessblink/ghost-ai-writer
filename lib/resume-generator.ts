@@ -55,9 +55,14 @@ Ensure the resume is ATS-friendly and highlights relevant experience.`
       if (message.includes('invalid_api_key')) {
         throw new Error('Invalid OpenAI API key. Please check your settings')
       }
-      throw error
+      if (message.includes('rate limit')) {
+        throw new Error('OpenAI API rate limit reached. Please try again in a moment')
+      }
+      // Return the original error message for other cases
+      throw new Error(error.message)
     }
     
+    // For non-Error objects, provide a generic message
     throw new Error('An unexpected error occurred while generating the resume')
   }
 }
