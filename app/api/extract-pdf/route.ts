@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       const pages: { [page: number]: { [y: number]: { [x: number]: string } } } = {}
       let currentPage = 0
 
-      new PdfReader().parseBuffer(buffer, (err: Error | null, item: any) => {
+      new PdfReader().parseBuffer(buffer, (err: any, item: any) => {
         if (err) {
           console.error('PDF parsing error:', err)
           reject(err)
