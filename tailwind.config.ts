@@ -67,10 +67,24 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "subtle-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 0 0 rgba(var(--primary-rgb), 0.1)",
+          },
+          "50%": { 
+            boxShadow: "0 0 16px 2px rgba(var(--primary-rgb), 0.1)",
+          }
+        },
+        "bounce-subtle": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-2px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "subtle-glow": "subtle-glow 64s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "bounce-subtle": "bounce-subtle 2s ease-in-out infinite",
       },
     },
   },

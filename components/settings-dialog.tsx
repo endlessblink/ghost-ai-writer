@@ -18,7 +18,7 @@ import { Switch } from "@/components/ui/switch"
 export function SettingsDialog() {
   const [openAIKey, setOpenAIKey] = React.useState("")
   const [anthropicKey, setAnthropicKey] = React.useState("")
-  const [useOpenAI, setUseOpenAI] = React.useState(true)
+  const [useOpenAI, setUseOpenAI] = React.useState(false)
   const [useAnthropic, setUseAnthropic] = React.useState(false)
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -73,8 +73,6 @@ export function SettingsDialog() {
         setUseAnthropic(true)
       } else if (savedOpenAIKey) {
         setOpenAIKey(savedOpenAIKey)
-        setUseOpenAI(true)
-      } else {
         setUseOpenAI(true)
       }
     }

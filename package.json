@@ -44,6 +44,8 @@
 
     "@radix-ui/react-switch": "^1.0.3",
 
+    "@types/pdfjs-dist": "2.10.377",
+
     "class-variance-authority": "^0.7.0",
 
     "clsx": "^2.1.0",
@@ -60,15 +62,33 @@
 
     "openai": "4.71.1",
 
+    "pdf-lib": "1.17.1",
+
+    "pdf-parse": "1.1.1",
+
+    "pdf.js-extract": "0.2.1",
+
+    "pdf2json": "3.1.4",
+
+    "pdfjs-dist": "2.16.105",
+
+    "pdfreader": "3.0.5",
+
+    "puppeteer": "21.11.0",
+
     "react": "^18.2.0",
 
     "react-dom": "^18.2.0",
+
+    "react-hook-form": "7.53.2",
+
+    "sharp": "0.33.5",
 
     "tailwind-merge": "^2.2.1",
 
     "tailwindcss-animate": "^1.0.7",
 
-    "puppeteer": "^21.0.0"
+    "tesseract.js": "5.1.1"
 
   },
 
@@ -95,5 +115,4 @@
   }
 
 }
-
 
