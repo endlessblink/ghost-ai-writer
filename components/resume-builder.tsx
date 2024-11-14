@@ -9,6 +9,7 @@ import { FileText, Loader2, Wand2 } from "lucide-react"
 import type { ResumeFormData, GeneratedResume, ResumeError } from "@/lib/types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FormattedResume } from "@/components/formatted-resume"
+import { PDFUpload } from "./pdf-upload"
 
 interface ResumeBuilderProps {
   apiType: 'anthropic' | 'openai'
@@ -104,12 +105,20 @@ export function ResumeBuilder({ apiType, apiKey }: ResumeBuilderProps) {
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Your Current Resume</label>
-            <Textarea
-              placeholder="Paste your current resume or relevant experience..."
-              value={formData.existingResume}
-              onChange={(e) => handleInputChange("existingResume", e.target.value)}
-              className="h-48"
-            />
+            <div className="space-y-2">
+              <PDFUpload 
+                onTextExtracted={(text) => handleInputChange("existingResume", text)} 
+                className="mb-2"
+              />
+              <div className="relative">
+                <Textarea
+                  value={formData.existingResume}
+                  onChange={(e) => handleInputChange("existingResume", e.target.value)}
+                  className="h-48"
+                  placeholder="Paste your current resume here or upload a PDF"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
