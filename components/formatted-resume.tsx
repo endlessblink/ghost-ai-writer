@@ -3,8 +3,8 @@
 import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download, Eye } from "lucide-react"
-import { generatePDF, previewPDF } from "@/lib/pdf-utils"
+import { Download } from "lucide-react"
+import { generatePDF } from "@/lib/pdf-utils"
 
 interface FormattedResumeProps {
   content: string
@@ -76,14 +76,6 @@ export function FormattedResume({ content }: FormattedResumeProps) {
     }
   }
 
-  const handlePreview = async () => {
-    try {
-      await previewPDF('resume-content')
-    } catch (error) {
-      console.error('Failed to preview PDF:', error)
-    }
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -95,14 +87,10 @@ export function FormattedResume({ content }: FormattedResumeProps) {
           className="prose dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: formattedContent }}
         />
-        <div className="flex space-x-4 mt-4">
+        <div className="mt-4">
           <Button onClick={handleDownload}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
-          </Button>
-          <Button onClick={handlePreview}>
-            <Eye className="mr-2 h-4 w-4" />
-            Preview PDF
           </Button>
         </div>
       </CardContent>

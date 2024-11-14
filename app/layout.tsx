@@ -15,3 +15,9 @@ export default function RootLayout({
     </html>
   )
 }
+
+export const metadata = {
+  title: 'CV in the Shell',
+  description: 'A developer-focused CV generator'
+  // ... other metadata
+}

@@ -1,7 +1,7 @@
 {
-  "name": "AI Resume Builder",
-  "short_name": "Resume Builder",
-  "description": "Create tailored, ATS-optimized resumes powered by AI",
+  "name": "CV in the Shell",
+  "short_name": "CV Shell",
+  "description": "A developer-focused CV generator powered by AI",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
