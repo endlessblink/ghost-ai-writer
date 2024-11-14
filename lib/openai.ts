@@ -21,7 +21,7 @@ export async function validateApiKey(apiKey: string): Promise<boolean> {
 
 export function getOpenAIClient() {
   const apiKey = typeof window !== 'undefined' 
-    ? localStorage.getItem('openai_key') 
+    ? localStorage.getItem('openai_api_key') 
     : process.env.OPENAI_API_KEY
 
   if (!apiKey) {

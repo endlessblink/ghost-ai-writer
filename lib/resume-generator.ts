@@ -32,18 +32,9 @@ City, State/Region, Country | Phone | Email
 - Start with years of experience and current title
 - Include 1-2 key achievements with metrics
 - Mention most relevant technical skills
-Example:
-Senior Motion Designer with 10+ years of experience in post-production and gaming. Led teams delivering 200+ projects with 
-98% client satisfaction rate. Expert in Adobe Creative Suite, managing $1M+ production budgets while reducing delivery 
-time by 40%.
 
 3. Technical Skills Section
-Group related skills by category with proficiency levels:
-TECHNICAL SKILLS
-• Motion Design: After Effects, Spine (Expert)
-• Video Editing: Premiere Pro, DaVinci Resolve (Advanced)
-• 3D & Graphics: Blender, Photoshop, Illustrator (Advanced)
-• Project Management: Asset Management, Team Leadership
+Group related skills by category with proficiency levels
 
 4. Professional Experience
 Format each entry as:
@@ -53,7 +44,7 @@ City, Country
 MM/YYYY - MM/YYYY
 
 • Achieved [specific result] by [specific action] resulting in [quantifiable impact]
-• Begin each bullet with action verbs (Developed, Implemented, Led, etc.)
+• Begin each bullet with action verbs
 • 3-5 bullets per role
 • Space between each bullet point
 • Consistent punctuation throughout
@@ -65,7 +56,6 @@ MM/YYYY - MM/YYYY
 - Alignment: Left-aligned text
 - Spacing: Single-spaced with extra space between sections
 - Section Headers: ALL CAPS, bold
-- No tables, columns, text boxes, graphics, logos, headers/footers, or special characters
 
 6. Content Guidelines
 - Keep to 2 pages maximum
@@ -78,21 +68,16 @@ MM/YYYY - MM/YYYY
 
 7. Keywords and ATS Optimization
 - Mirror exact phrases from job description
-- Use both full terms and acronyms: "Adobe After Effects (AE)"
+- Use both full terms and acronyms
 - Place keywords in context of achievements
 - Include relevant industry-standard certifications
-- Avoid keyword stuffing and complex formatting
 
 Format the output using markdown with these markers:
 # for name (centered)
 ## for main sections (left-aligned, all caps)
 #### for job entries
 - for bullet points
-| for contact information separators
-
-Ensure all content is factual and based on the provided information.
-Focus on quantifiable achievements and metrics where possible.
-Maintain consistent formatting throughout the document.`
+| for contact information separators`
 
     const userPrompt = `Please rewrite this resume to be ATS-friendly while maintaining all factual information:
 
@@ -119,23 +104,30 @@ Focus on highlighting relevant experience and skills that match the job requirem
         userPrompt: userPrompt.length
       })
 
-      const completion = await anthropic.messages.create({
-        model: 'claude-3-opus-20240229',
-        max_tokens: 4096,
-        system: systemPrompt,
-        messages: [
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7,
-      })
+      try {
+        const completion = await anthropic.messages.create({
+          model: 'claude-3-opus-20240229',
+          max_tokens: 4096,
+          system: systemPrompt,
+          messages: [
+            { role: 'user', content: userPrompt }
+          ]
+        })
 
-      console.log('Anthropic response received:', {
-        status: completion.stop_reason,
-        modelUsed: completion.model,
-        usage: completion.usage
-      })
+        console.log('Anthropic response received:', {
+          status: completion.stop_reason,
+          modelUsed: completion.model,
+          usage: completion.usage
+        })
 
-      content = completion.content[0]?.text || undefined
+        content = completion.content[0].text.replace(/^Here is the ATS-optimized version of your resume:?\s*/i, '').trim()
+      } catch (error) {
+        console.error('Anthropic API error:', error)
+        if (error instanceof Error) {
+          throw new Error(`Anthropic API error: ${error.message}`)
+        }
+        throw new Error('Failed to generate resume with Anthropic')
+      }
     } else {
       const openai = getOpenAIClient()
       
@@ -144,27 +136,36 @@ Focus on highlighting relevant experience and skills that match the job requirem
         userPrompt: userPrompt.length
       })
       
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2048,
-        presence_penalty: 0.1,
-        frequency_penalty: 0.1,
-      })
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 2048,
+          presence_penalty: 0.1,
+          frequency_penalty: 0.1,
+        })
 
-      console.log('OpenAI response received:', {
-        status: completion.choices[0]?.finish_reason,
-        modelUsed: completion.model,
-        promptTokens: completion.usage?.prompt_tokens,
-        completionTokens: completion.usage?.completion_tokens
-      })
+        console.log('OpenAI response received:', {
+          status: completion.choices[0]?.finish_reason,
+          modelUsed: completion.model,
+          promptTokens: completion.usage?.prompt_tokens,
+          completionTokens: completion.usage?.completion_tokens
+        })
 
-      content = completion.choices[0]?.message?.content || undefined
+        content = completion.choices[0]?.message?.content
+      } catch (error) {
+        console.error('OpenAI API error:', error)
+        if (error instanceof Error) {
+          throw new Error(`OpenAI API error: ${error.message}`)
+        }
+        throw new Error('Failed to generate resume with OpenAI')
+      }
     }
+
     if (!content) {
       throw new Error('No content generated')
     }
@@ -173,27 +174,9 @@ Focus on highlighting relevant experience and skills that match the job requirem
     return content
   } catch (error) {
     console.error('Resume generation error:', error)
-    
     if (error instanceof Error) {
-      // Handle specific OpenAI API errors
-      const message = error.message.toLowerCase()
-      if (message.includes('api key')) {
-        throw new Error('Please add your OpenAI API key in settings')
-      }
-      if (message.includes('insufficient_quota')) {
-        throw new Error('OpenAI API quota exceeded. Please check your billing settings')
-      }
-      if (message.includes('invalid_api_key')) {
-        throw new Error('Invalid OpenAI API key. Please check your settings')
-      }
-      if (message.includes('rate limit')) {
-        throw new Error('OpenAI API rate limit reached. Please try again in a moment')
-      }
-      // Return the original error message for other cases
-      throw new Error(error.message)
+      throw error
     }
-    
-    // For non-Error objects, provide a generic message
     throw new Error('An unexpected error occurred while generating the resume')
   }
 }

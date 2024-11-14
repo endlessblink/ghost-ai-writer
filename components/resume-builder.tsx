@@ -10,7 +10,12 @@ import type { ResumeFormData, GeneratedResume, ResumeError } from "@/lib/types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FormattedResume } from "@/components/formatted-resume"
 
-export function ResumeBuilder() {
+interface ResumeBuilderProps {
+  apiType: 'anthropic' | 'openai'
+  apiKey: string
+}
+
+export function ResumeBuilder({ apiType, apiKey }: ResumeBuilderProps) {
   const [formData, setFormData] = React.useState<ResumeFormData>({
     jobDescription: "",
     existingResume: "",
@@ -37,24 +42,16 @@ export function ResumeBuilder() {
       return
     }
 
-    const openaiKey = localStorage.getItem("openai_api_key")
-    const anthropicKey = localStorage.getItem("anthropic_api_key")
-    
-    if (!openaiKey && !anthropicKey) {
-      setError({ message: "Please add an API key in settings" })
-      return
-    }
-
     setIsGenerating(true)
     setError(null)
 
     try {
       const response = await fetch("/api/generate-resume", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "x-api-key": openaiKey || anthropicKey || "",
-          "x-api-type": openaiKey ? "openai" : "anthropic"
+          "x-api-key": apiKey,
+          "x-api-type": apiType,
         },
         body: JSON.stringify(formData)
       })
@@ -67,7 +64,7 @@ export function ResumeBuilder() {
       if (data.error) {
         throw new Error(data.error)
       }
-      
+
       setGeneratedResume({
         content: data.content,
         createdAt: new Date()
@@ -125,23 +122,40 @@ export function ResumeBuilder() {
             />
           </div>
 
-          <Button 
-            onClick={handleGenerate}
-            disabled={isGenerating || !formData.jobDescription || !formData.existingResume}
-            className="w-full"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Generate Resume
-              </>
-            )}
-          </Button>
+          <div className="flex gap-4">
+            <Button 
+              onClick={handleGenerate}
+              disabled={isGenerating || !formData.jobDescription || !formData.existingResume}
+              className="flex-1"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Generate Resume
+                </>
+              )}
+            </Button>
+            <Button 
+              onClick={() => {
+                setFormData({
+                  jobDescription: "",
+                  existingResume: "",
+                  qualifications: ""
+                });
+                setGeneratedResume(null);
+                setError(null);
+              }}
+              variant="outline"
+              className="px-8"
+            >
+              Reset
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

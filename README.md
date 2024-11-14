@@ -1,6 +1,6 @@
-# Ghost AI Writer
+# CV in the Shell
 
-An intelligent AI-powered writing assistant that helps tailor your resume for specific job descriptions.
+An intelligent AI-powered resume builder that helps tailor your CV for specific job descriptions.
 
 ## Features
 
@@ -15,8 +15,8 @@ An intelligent AI-powered writing assistant that helps tailor your resume for sp
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/ghost-ai-writer.git
-cd ghost-ai-writer
+git clone https://github.com/yourusername/cv-in-the-shell.git
+cd cv-in-the-shell
 ```
 
 2. Install dependencies
