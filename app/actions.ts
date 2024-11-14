@@ -5,7 +5,13 @@ import { sampleJobListing, sampleQualifications, sampleCV } from '@/lib/sample-d
 import { generateResumeContent } from '@/lib/resume-generator'
 import { storage } from '@/lib/storage'
 
-export async function generateResume(jobListing: string, qualifications: string | undefined, existingCV: string) {
+export async function generateResume(
+  jobListing: string, 
+  qualifications: string | undefined, 
+  existingCV: string,
+  apiKey: string,
+  apiType: 'openai' | 'anthropic' = 'openai'
+) {
   try {
     // Test mode - return mock data if using sample inputs
     if (
@@ -48,7 +54,11 @@ Tech University, Class of 2018
 - TypeScript Development`
     }
 
-    return await generateResumeContent(jobListing, qualifications, existingCV)
+    if (!apiKey) {
+      throw new Error('No API key provided. Please add an API key in settings.')
+    }
+
+    return await generateResumeContent(jobListing, qualifications, existingCV, apiKey, apiType)
   } catch (error) {
     console.error('Error generating resume:', error)
     if (error instanceof Error) {

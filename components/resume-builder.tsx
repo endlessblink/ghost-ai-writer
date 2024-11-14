@@ -9,6 +9,7 @@ import { FileText, Loader2, Wand2 } from "lucide-react"
 import type { ResumeFormData, GeneratedResume, ResumeError } from "@/lib/types"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FormattedResume } from "@/components/formatted-resume"
+import { generateResume } from "@/app/actions"
 
 export function ResumeBuilder() {
   const [formData, setFormData] = React.useState<ResumeFormData>({
@@ -49,27 +50,19 @@ export function ResumeBuilder() {
     setError(null)
 
     try {
-      const response = await fetch("/api/generate-resume", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "x-api-key": openaiKey || anthropicKey || "",
-          "x-api-type": openaiKey ? "openai" : "anthropic"
-        },
-        body: JSON.stringify(formData)
-      })
+      const apiKey = anthropicKey || openaiKey || ""
+      const apiType = anthropicKey ? "anthropic" : "openai"
 
-      if (!response.ok) {
-        throw new Error("Failed to generate resume")
-      }
-
-      const data = await response.json()
-      if (data.error) {
-        throw new Error(data.error)
-      }
+      const content = await generateResume(
+        formData.jobDescription,
+        formData.qualifications,
+        formData.existingResume,
+        apiKey,
+        apiType
+      )
       
       setGeneratedResume({
-        content: data.content,
+        content,
         createdAt: new Date()
       })
     } catch (err) {

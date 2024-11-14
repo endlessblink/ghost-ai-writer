@@ -20,38 +20,68 @@ export function SettingsDialog() {
   const [anthropicKey, setAnthropicKey] = React.useState("")
   const [useOpenAI, setUseOpenAI] = React.useState(true)
   const [useAnthropic, setUseAnthropic] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false)
 
-  const handleSaveKeys = () => {
-    if (useOpenAI) {
-      localStorage.setItem("openai_api_key", openAIKey)
+  const handleOpenAISwitch = (checked: boolean) => {
+    if (checked) {
+      setUseOpenAI(true)
+      setUseAnthropic(false)
+      setAnthropicKey("")
     } else {
-      localStorage.removeItem("openai_api_key")
-    }
-    
-    if (useAnthropic) {
-      localStorage.setItem("anthropic_api_key", anthropicKey)
-    } else {
-      localStorage.removeItem("anthropic_api_key")
+      setUseOpenAI(false)
+      setOpenAIKey("")
     }
   }
 
-  React.useEffect(() => {
-    const savedOpenAIKey = localStorage.getItem("openai_api_key")
-    const savedAnthropicKey = localStorage.getItem("anthropic_api_key")
-    
-    if (savedOpenAIKey) {
-      setOpenAIKey(savedOpenAIKey)
-      setUseOpenAI(true)
-    }
-    
-    if (savedAnthropicKey) {
-      setAnthropicKey(savedAnthropicKey)
+  const handleAnthropicSwitch = (checked: boolean) => {
+    if (checked) {
       setUseAnthropic(true)
+      setUseOpenAI(false)
+      setOpenAIKey("")
+    } else {
+      setUseAnthropic(false)
+      setAnthropicKey("")
     }
-  }, [])
+  }
+
+  const handleSaveKeys = () => {
+    sessionStorage.removeItem("openai_api_key")
+    sessionStorage.removeItem("anthropic_api_key")
+    
+    if (useOpenAI && openAIKey) {
+      sessionStorage.setItem("openai_api_key", openAIKey)
+    }
+    if (useAnthropic && anthropicKey) {
+      sessionStorage.setItem("anthropic_api_key", anthropicKey)
+    }
+    setIsOpen(false)
+  }
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsOpen(open)
+    if (open) {
+      const savedOpenAIKey = sessionStorage.getItem("openai_api_key")
+      const savedAnthropicKey = sessionStorage.getItem("anthropic_api_key")
+      
+      setOpenAIKey("")
+      setAnthropicKey("")
+      setUseOpenAI(false)
+      setUseAnthropic(false)
+      
+      if (savedAnthropicKey) {
+        setAnthropicKey(savedAnthropicKey)
+        setUseAnthropic(true)
+      } else if (savedOpenAIKey) {
+        setOpenAIKey(savedOpenAIKey)
+        setUseOpenAI(true)
+      } else {
+        setUseOpenAI(true)
+      }
+    }
+  }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
@@ -73,7 +103,7 @@ export function SettingsDialog() {
               <Switch
                 id="openai"
                 checked={useOpenAI}
-                onCheckedChange={setUseOpenAI}
+                onCheckedChange={handleOpenAISwitch}
               />
             </div>
             {useOpenAI && (
@@ -97,7 +127,7 @@ export function SettingsDialog() {
               <Switch
                 id="anthropic"
                 checked={useAnthropic}
-                onCheckedChange={setUseAnthropic}
+                onCheckedChange={handleAnthropicSwitch}
               />
             </div>
             {useAnthropic && (
