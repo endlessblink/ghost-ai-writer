@@ -35,7 +35,7 @@
     "pdf-parse": "1.1.1",
     "pdf.js-extract": "0.2.1",
     "pdf2json": "3.1.4",
-    "pdfjs-dist": "2.16.105",
+    "pdfjs-dist": "^4.8.69",
     "pdfreader": "3.0.5",
     "puppeteer": "^22.3.0",
     "react": "^18.2.0",
@@ -51,9 +51,13 @@
     "autoprefixer": "^10.4.18",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",
+    "file-loader": "6.2.0",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "pdfjs-dist": "^4.8.69"
   }
 }

@@ -17,8 +17,22 @@ const nextConfig = {
         zlib: false
       };
     }
+    
+    // Optimize PDF handling
+    config.module.rules.push({
+      test: /\.pdf$/,
+      use: 'file-loader'
+    });
+
     return config;
-  }
+  },
+  // Production optimizations
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true,
+  compress: true,
+  optimizeFonts: true,
+  productionBrowserSourceMaps: false
 }
 
 module.exports = nextConfig
