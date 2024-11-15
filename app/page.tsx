@@ -23,10 +23,10 @@ export default function Home() {
           </div>
           <div className="w-full max-w-2xl space-y-4 text-left">
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Paste your current resume and the job description you're applying for. The AI will analyze both and generate a tailored version of your resume that matches the job requirements.
+              Paste your current resume and the job description you&apos;re applying for. The AI will analyze both and generate a tailored version of your resume that matches the job requirements.
             </p>
             <div className="text-sm text-muted-foreground/80 space-y-2">
-              <p>To use this tool, you'll need either:</p>
+              <p>To use this tool, you&apos;ll need either:</p>
               <ul className="list-disc list-inside space-y-1 ml-2">
                 <li>
                   OpenAI API key (<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">get it here</a>)
