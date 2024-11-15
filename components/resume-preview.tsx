@@ -18,8 +18,8 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
   const previewRef = useRef<HTMLDivElement>(null)
 
   const handleDownloadPDF = async () => {
-    if (previewRef.current) {
-      await generatePDF(previewRef.current)
+    if (previewRef.current && previewRef.current.id) {
+      await generatePDF(previewRef.current.id)
     }
   }
   return (
@@ -31,29 +31,18 @@ export function ResumePreview({ content, onSave }: ResumePreviewProps) {
             <TabsTrigger value="markdown">Markdown</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
-            <Button onClick={onSave} variant="outline">
-              <Save className="mr-2 h-4 w-4" />
-              Save Resume
+            <Button onClick={onSave} size="sm" variant="outline">
+              <Save className="w-4 h-4 mr-2" />
+              Save
             </Button>
-            <Button onClick={handleDownloadPDF} variant="outline">
-              <Download className="mr-2 h-4 w-4" />
+            <Button onClick={handleDownloadPDF} size="sm" variant="outline">
+              <Download className="w-4 h-4 mr-2" />
               Download PDF
             </Button>
           </div>
         </div>
-        <TabsContent value="preview" className="mt-4">
-          <div ref={previewRef} className="prose dark:prose-invert max-w-[21cm] mx-auto bg-white p-8 rounded-lg shadow-sm print:shadow-none" style={{ 
-            width: '21cm',
-            minHeight: '29.7cm',
-            fontSize: '12pt',
-            lineHeight: '1.6',
-            letterSpacing: '0.01em',
-            fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
-            textRendering: 'optimizeLegibility',
-            WebkitFontSmoothing: 'antialiased',
-            MozOsxFontSmoothing: 'grayscale',
-            fontFamily: 'Helvetica, Arial, sans-serif'
-          }}>
+        <TabsContent value="preview" className="mt-0">
+          <div ref={previewRef} id="resume-preview" className="prose prose-sm dark:prose-invert max-w-none">
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </TabsContent>
