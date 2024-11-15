@@ -29,7 +29,18 @@ const nextConfig = {
   swcMinify: true,
   compress: true,
   optimizeFonts: true,
-  productionBrowserSourceMaps: false
+  productionBrowserSourceMaps: false,
+  // Disable tracing to avoid permission issues
+  output: 'standalone',
+  experimental: {
+    outputFileTracingRoot: undefined,
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/**/*',
+        '.next/**/*',
+      ],
+    },
+  }
 }
 
 module.exports = nextConfig
